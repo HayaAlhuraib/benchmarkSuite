@@ -24,6 +24,18 @@
 
 const int SIZE_DATA = 256; // Default matrix size (if not provided)
 
+/* Helper function to print a matrix */
+void print_matrix(const char* name, float* matrix, size_t size) {
+    printf("%s:\n", name);
+    for (size_t i = 0; i < size; i++) {
+        for (size_t j = 0; j < size; j++) {
+            printf("%.2f ", matrix[i * size + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 int main(int argc, char** argv) {
     /* Set the buffer for printf to NULL */
     setbuf(stdout, NULL);
@@ -96,6 +108,10 @@ int main(int argc, char** argv) {
         B[i] = (float)(rand() % 10);            // Random numbers between 0 and 9
     }
 
+    /* Print input matrices */
+    print_matrix("Matrix A", A, size);
+    print_matrix("Matrix B", B, size);
+
     /* Prepare arguments */
     args_t args = {
         .input = (void*)input, // Pass A and B as contiguous memory
@@ -105,18 +121,17 @@ int main(int argc, char** argv) {
         .nthreads = nthreads
     };
 
-    /* Run the implementation */
-    printf("Running %s implementation:\n", impl_str);
-    (*impl)((void*)&args);
+    /* Measure runtime */
+    clock_t start = clock(); // Start timer
+    (*impl)((void*)&args);   // Run matrix multiplication
+    clock_t end = clock();   // End timer
 
-    /* Display results (optional) */
-    printf("Result matrix R:\n");
-    for (size_t i = 0; i < size; i++) {
-        for (size_t j = 0; j < size; j++) {
-            printf("%.2f ", R[i * size + j]);
-        }
-        printf("\n");
-    }
+    /* Print result matrix */
+    print_matrix("Result Matrix R", R, size);
+
+    /* Print runtime */
+    double runtime = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Runtime: %.6f seconds\n", runtime);
 
     /* Free memory */
     free(input);
