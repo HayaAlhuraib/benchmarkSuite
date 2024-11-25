@@ -22,7 +22,7 @@
 /* Include application-specific headers */
 #include "include/types.h"
 
-const int SIZE_DATA = 4 * 1024 * 1024; // Default matrix size (elements)
+const int SIZE_DATA = 256; // Default matrix size (if not provided)
 
 int main(int argc, char** argv) {
     /* Set the buffer for printf to NULL */
@@ -70,12 +70,14 @@ int main(int argc, char** argv) {
         printf("Usage: %s {-i | --impl} naive [Options]\n", argv[0]);
         printf("  Options:\n");
         printf("    -h | --help      Print this message\n");
-        printf("    -s | --size      Size of input matrices (default = %d)\n", data_size);
+        printf("    -s | --size      Size of input matrices (default = %d)\n", SIZE_DATA);
         exit(help ? 0 : 1);
     }
 
     /* Initialize matrices */
     size_t size = data_size;  // Square matrix dimensions
+    srand((unsigned int)time(NULL)); // Seed the random number generator
+
     float* input = malloc(2 * size * size * sizeof(float)); // Allocate A and B in contiguous memory
     float* R = malloc(size * size * sizeof(float)); // Allocate result matrix
 
