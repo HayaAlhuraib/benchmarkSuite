@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     int nstdevs  = 3;
 
     /* Data */
-    int data_size = SIZE_DATA;// Holds the size passed to the program
+    int data_size = SIZE_DATA; // Holds the size passed to the program
 
     /* Parse arguments */
     void* (*impl_scalar_naive_ptr)(void* args) = impl_scalar_naive;  // Updated
@@ -76,24 +76,27 @@ int main(int argc, char** argv) {
 
     /* Initialize matrices */
     size_t size = data_size;  // Square matrix dimensions
-    float* A = malloc(size * size * sizeof(float));
-    float* B = malloc(size * size * sizeof(float));
-    float* R = malloc(size * size * sizeof(float));
+    float* input = malloc(2 * size * size * sizeof(float)); // Allocate A and B in contiguous memory
+    float* R = malloc(size * size * sizeof(float)); // Allocate result matrix
 
-    if (!A || !B || !R) {
+    if (!input || !R) {
         fprintf(stderr, "Memory allocation failed.\n");
         exit(1);
     }
 
+    /* Set A and B inside input */
+    float* A = input;                           // A starts at the beginning
+    float* B = input + size * size;             // B starts right after A
+
     /* Initialize input matrices */
     for (size_t i = 0; i < size * size; i++) {
-        A[i] = (float)(rand() % 10);// Generates random numbers between 0 and 9
-        B[i] = (float)(rand() % 10);// Generates random numbers between 0 and 9
+        A[i] = (float)(rand() % 10);            // Random numbers between 0 and 9
+        B[i] = (float)(rand() % 10);            // Random numbers between 0 and 9
     }
 
     /* Prepare arguments */
     args_t args = {
-        .input = (void*)A,
+        .input = (void*)input, // Pass A and B as contiguous memory
         .output = (void*)R,
         .size = size,
         .cpu = cpu,
@@ -114,8 +117,7 @@ int main(int argc, char** argv) {
     }
 
     /* Free memory */
-    free(A);
-    free(B);
+    free(input);
     free(R);
 
     return 0;
